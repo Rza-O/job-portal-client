@@ -3,13 +3,14 @@ import React, { useContext } from 'react';
 import loginLottie from '../../assets/Lottie/login.json';
 import AuthContext from '../../context/AuthContext/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignIn = () => {
     const { signInUser } = useContext(AuthContext);
 
     const location = useLocation();
     const navigate = useNavigate();
-    console.log('In sign in page',location);
+    console.log('In sign in page', location);
 
     const from = location.state || '/';
 
@@ -25,13 +26,20 @@ const SignIn = () => {
         // regex ^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6}$
 
         signInUser(email, password)
-        .then(res=> {
-            console.log('Sign in', res.user);
-            navigate(from);
-        })
-        .catch(err=> {
-            console.log(err);
-        })
+            .then(res => {
+                console.log('Sign in', res.user.email);
+                const user = { email: res.user.email }
+                axios.post('http://localhost:3000/jwt', user, {
+                    withCredentials: true
+                })
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                // navigate(from);
+            })
+            .catch(err => {
+                console.log(err);
+            })
 
 
     }
